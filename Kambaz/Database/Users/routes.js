@@ -1,4 +1,4 @@
-import UsersDao from "dao.js";
+import UsersDao from "./DAO.js";
 
 export default function UserRoutes(app, db) {
  const dao = UsersDao(db);
