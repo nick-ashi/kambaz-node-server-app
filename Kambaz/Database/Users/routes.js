@@ -1,4 +1,5 @@
-import UsersDao from "/dao.js";
+import UsersDao from "Kambaz/Database/Users/dao.js";
+
 export default function UserRoutes(app, db) {
  const dao = UsersDao(db);
   const createUser = (req, res) => { };
