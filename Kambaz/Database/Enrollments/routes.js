@@ -4,16 +4,16 @@ export default function EnrollmentRoutes(app, db) {
   const dao = EnrollmentsDao(db);
 
   // Enroll a user in a course
-  const enrollUserInCourse = (req, res) => {
+  const enrollUserInCourse = async (req, res) => {
     const { userId, courseId } = req.params;
-    const enrollment = dao.enrollUserInCourse(userId, courseId);
+    const enrollment = await dao.enrollUserInCourse(userId, courseId);
     res.json(enrollment);
   };
 
   // Unenroll a user from a course
-  const unenrollUserFromCourse = (req, res) => {
+  const unenrollUserFromCourse = async (req, res) => {
     const { userId, courseId } = req.params;
-    dao.unenrollUserFromCourse(userId, courseId);
+    await dao.unenrollUserFromCourse(userId, courseId);
     res.sendStatus(204);
   };
 
@@ -39,9 +39,9 @@ export default function EnrollmentRoutes(app, db) {
   };
 
   // Get all courses a user is enrolled in
-  const findCoursesForUser = (req, res) => {
+  const findCoursesForUser = async (req, res) => {
     const { userId } = req.params;
-    const courses = dao.findCoursesForUser(userId);
+    const courses = await dao.findCoursesForUser(userId);
     res.json(courses);
   };
 

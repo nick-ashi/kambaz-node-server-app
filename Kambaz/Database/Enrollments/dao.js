@@ -1,25 +1,18 @@
 import { v4 as uuidv4 } from "uuid";
+import model from "./model.js";
 
 export default function EnrollmentsDao(db) {
+  
   function enrollUserInCourse(userId, courseId) {
-    const { enrollments } = db;
-
-    const existingEnrollment = enrollments.find(
-      (enrollment) => enrollment.user === userId && enrollment.course === courseId
-    );
-    if (existingEnrollment) {
-      return existingEnrollment;
-    }
-    const newEnrollment = { _id: uuidv4(), user: userId, course: courseId };
-    db.enrollments = [...db.enrollments, newEnrollment];
-    return newEnrollment;
+    return model.create({
+     user: userId,
+     course: courseId,
+     _id: `${userId}-${courseId}`,
+   });
   }
 
-  function unenrollUserFromCourse(userId, courseId) {
-    const { enrollments } = db;
-    db.enrollments = enrollments.filter(
-      (enrollment) => !(enrollment.user === userId && enrollment.course === courseId)
-    );
+  async function unenrollUserFromCourse(user, course) {
+    return model.deleteOne({ user, course });
   }
 
   function findEnrollmentsForUser(userId) {
@@ -40,13 +33,15 @@ export default function EnrollmentsDao(db) {
     return users.filter((user) => enrolledUserIds.includes(user._id));
   }
 
-  function findCoursesForUser(userId) {
-    const { enrollments, courses } = db;
-    const enrolledCourseIds = enrollments
-      .filter((enrollment) => enrollment.user === userId)
-      .map((enrollment) => enrollment.course);
-    return courses.filter((course) => enrolledCourseIds.includes(course._id));
+  async function findCoursesForUser(userId) {
+    const enrollments = await model.find({ user: userId }).populate("course");
+    return enrollments.map((enrollment) => enrollment.course);
   }
+
+  function unenrollAllUsersFromCourse(courseId) {
+   return model.deleteMany({ course: courseId });
+  }
+
 
   return {
     enrollUserInCourse,
@@ -55,5 +50,6 @@ export default function EnrollmentsDao(db) {
     findEnrollmentsForCourse,
     findUsersForCourse,
     findCoursesForUser,
+    unenrollAllUsersFromCourse,
   };
 }
